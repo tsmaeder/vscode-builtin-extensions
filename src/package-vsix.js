@@ -95,6 +95,10 @@ const repository = {
             console.log(`  (skipping extension ${extension} as per configuration`);
             continue;
         }
+        if (extension !== "markdown-language-features") {
+            console.log(`  (skipping extension ${extension}`);
+            continue;
+        }
 
         // is this extension/version already published?
         try {

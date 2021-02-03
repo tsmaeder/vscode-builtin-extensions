@@ -31,6 +31,8 @@ jobs:
           node-version: 10
       - run: npx ovsx --version
         name: Check ovsx version
+      - run: cd vscode && yarn
+        name: pre-build vscode
       - run: yarn
         name: Bundle Extensions
       - run: yarn package-vsix:next

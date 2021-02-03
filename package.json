@@ -4,7 +4,7 @@
     "scripts": {
         "prepare": "yarn build:extensions && yarn bundle:extensions && yarn build",
         "build": "lerna run prepare",
-        "build:extensions": "yarn --cwd vscode && yarn compile:extensions",
+        "build:extensions": "yarn compile:extensions",
         "compile:extensions": "NODE_OPTIONS=--max-old-space-size=8192 node ./src/compile.js",
         "bundle:extensions": "NODE_OPTIONS=--max-old-space-size=8192 node ./src/bundle.js",
         "publish:vsix": "node ./src/publish-vsix.js",
