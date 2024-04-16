@@ -14,7 +14,8 @@
         "get-external-builtins": "node src/get-external-builtins.js",
         "clean": "git clean -ffdx; cd vscode && git clean -ffdx",
         "download:dash-licenses": "node ./src/download.js --url=\"https://repo.eclipse.org/service/local/artifact/maven/redirect?r=dash-licenses&g=org.eclipse.dash&a=org.eclipse.dash.licenses&v=LATEST\" --out=dash-licenses.jar",
-        "check:dependencies": "node ./src/check-dependencies.js",
+        "ip-check:builtins": "node ./src/check-dependencies.js --dir vscode/extensions",
+        "ip-check:external": "node ./src/check-dependencies.js --dir external-builtins",
         "archive:source": "cd vscode && git clean -xfd && cd .. && node ./src/archive-source.js"
     },
     "devDependencies": {
