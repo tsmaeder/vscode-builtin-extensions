@@ -21,7 +21,6 @@ const { glob } = require('glob');
 const { rgPath } = require('@vscode/ripgrep');
 
 const yargs = require('yargs');
-const { spawn } = require('child_process');
 
 const { token, dir } = yargs.option('token', {
     type: 'string',
