@@ -65,11 +65,8 @@ async function archiveExternal() {
 
     for (ext of prodJsonExts) {
         const names = ext.repo.split("/");
-        console.log(`entry ${names[names.length - 1]}, ${ext}`);
         entries.set(names[names.length - 1], ext);
     }
-
-    console.log(entries);
 
     const { execa } = await import('execa');
 
