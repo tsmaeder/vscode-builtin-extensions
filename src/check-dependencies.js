@@ -21,6 +21,7 @@ const { glob } = require('glob');
 const { rgPath } = require('@vscode/ripgrep');
 
 const yargs = require('yargs');
+const { inherits } = require('util');
 
 const { token, dir } = yargs.option('token', {
     type: 'string',
@@ -35,43 +36,49 @@ checkDependencies();
 
 async function checkDependencies() {
     const allFailed = new Set();
-    const files = await glob([`${dir}/*/yarn.lock`, `${dir}/*/package-lock.json`]);
-    const { execa } = await import('execa');
+    glob(`${dir}/*/*(yarn.lock|package-lock.json)`, async (err, files) => {
+        const { execa } = await import('execa');
 
-    for (file of files) {
-        process.stdout.write(`inspecting ${file}...`);
-        try {
-            const javaArgs = ['-jar', 'dash-licenses.jar', '-summary', 'summary.txt'];
-            if (token) {
-                javaArgs.push('-review', '-token', token);
+        if (token) {
+            console.log('Automatically opening IP tickets');
+        }
+
+        for (file of files) {
+            console.log(`inspecting ${file}...`);
+            try {
+                const javaArgs = ['-jar', 'dash-licenses.jar', '-summary', 'summary.txt'];
+                if (token) {
+                    javaArgs.push('-review', '-project',  'ecd.theia', '-token', token);
+                }
+                javaArgs.push(file);
+                await execa('java', javaArgs, { stdout: 'inherit', stderr: 'inherit'});
+                console.log('OK\n');
+            } catch (e) {
+                // ignore
+                console.log('\x1b[31mFailures\x1b[0m\n');
             }
-            javaArgs.push(file);
-            await execa('java', javaArgs);
-            process.stdout.write('OK\n');
-        } catch (e) {
-            // ignore
-            process.stderr.write('\x1b[31mFailures\x1b[0m\n');
-        }
-
-        const cp = execa(rgPath, ['restricted', 'summary.txt']);
-        try {
-            const { stdout } = await cp;
-            const lines = stdout.split(/\r?\n|\r|\n/g);
-            lines.forEach(line => allFailed.add(line));
-            console.log(stdout);
-        } catch (e) {
-            if (cp.exitCode !== 1) { // ripgrep returns 1 for "no matches found"
-                console.error(e);
+    
+            const cp = execa(rgPath, ['restricted', 'summary.txt']);
+            try {
+                const { stdout } = await cp;
+                const lines = stdout.split(/\r?\n|\r|\n/g);
+                lines.forEach(line => allFailed.add(line));
+                console.log(stdout);
+            } catch (e) {
+                if (cp.exitCode !== 1) { // ripgrep returns 1 for "no matches found"
+                    console.error(e);
+                }
             }
         }
-    }
-
-    if (allFailed.size > 0) {
-        console.log('\x1b[31mIPCheck failed for:\x1b[0m');
-        for (line of allFailed) {
-            console.log(line);
+    
+        if (allFailed.size > 0) {
+            console.log('\x1b[31mIPCheck failed for:\x1b[0m');
+            for (line of allFailed) {
+                console.log(line);
+            }
+        } else {
+            console.log('IP check OK');
         }
-    } else {
-        console.log('IP check OK');
-    }
+    });
+    
 }

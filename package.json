@@ -16,7 +16,7 @@
         "download:dash-licenses": "node ./src/download.js --url=\"https://repo.eclipse.org/service/local/artifact/maven/redirect?r=dash-licenses&g=org.eclipse.dash&a=org.eclipse.dash.licenses&v=LATEST\" --out=dash-licenses.jar",
         "ip-check:builtin": "node ./src/check-dependencies.js --dir vscode/extensions",
         "ip-check:external": "node ./src/check-dependencies.js --dir external-builtins",
-        "archive:builtin": "cd vscode && git clean -xfd && cd .. && node ./src/archive-source.js builtin",
+        "archive:builtin": "node ./src/archive-source.js --mode builtin",
         "archive:external": "node ./src/archive-source.js --mode external"
     },
     "devDependencies": {
@@ -30,7 +30,7 @@
         "cross-env": "^7.0.3",
         "execa": "^8.0.1",
         "fs-extra": "^10.0.0",
-        "glob": "^10.3.12",
+        "glob": "^7.2.3",
         "node-fetch": "^2.6.0",
         "ovsx": "^0.8.1",
         "p-queue": "^2.4.2",

@@ -15,14 +15,15 @@
  ********************************************************************************/
 
 const archiver = require('archiver');
-const { glob } = require('glob');
+const glob = require('glob');
+const util = require('util');
+const globPromise = util.promisify(glob);
 const { root, vscodeExtensions, vscode, externalBuiltinsRepos } = require('./paths');
 const fs = require('fs');
 const path = require('path');
 const { computeVersion } = require('./version');
 
 const yargs = require('yargs');
-const { dir } = require('console');
 
 const { mode } = yargs.option('mode', {
     type: 'string',
@@ -37,11 +38,12 @@ const { mode } = yargs.option('mode', {
  */
 async function addExtensionToArchive(archive, extensionDir) {
     console.log(`adding extension ${extensionDir}`);
-    const filesToInclude = await glob('**', {
+    const filesToInclude = await globPromise('**', {
         cwd: extensionDir,
-        ignore: '**/test/**/*'
+        ignore: ['**/test/**/*', '**/test-workspace/**/*'],
+        dot: true,
+        nodir: true
     });
-
     for (const file of filesToInclude) {
         const filePath = path.resolve(extensionDir, file);
         archive.file(filePath, {
@@ -59,32 +61,39 @@ async function archiveExternal() {
      * @type ProductBuiltInExtensionEntry[]
     */
     const prodJsonExts = JSON.parse(content).builtInExtensions || [];
-    const entries= new Map(prodJsonExts.map(entry => {
-        const names= entry.repo.split("/");
-        return [names[names.length-1], entry];
-    }));
+    const entries= new Map();
+
+    for (ext of prodJsonExts) {
+        const names = ext.repo.split("/");
+        console.log(`entry ${names[names.length - 1]}, ${ext}`);
+        entries.set(names[names.length - 1], ext);
+    }
+
+    console.log(entries);
 
     const { execa } = await import('execa');
 
     const rootDir = externalBuiltinsRepos();
-    const dirs = await fs.promises.readdir(rootDir);
+    const dirs = await fs.promises.readdir(rootDir, { withFileTypes: true });
     for (const dir of dirs) {
-        const resolvedDir = path.resolve(rootDir, dir);
-        const entry= entries.get(dir);
-        process.stdout.write(`cleaning directory: ${resolvedDir}`);
-        await execa('git', ['clean', '-xfd'], {
-            cwd: resolvedDir,
-            stdout: 'inherit'
-        });
-        process.stdout.write('done\n');
+        if (dir.isDirectory()) {
+            const resolvedDir = path.resolve(rootDir, dir.name);
+            const entry = entries.get(dir.name);
+            process.stdout.write(`cleaning directory: ${resolvedDir}...`);
+            await execa('git', ['clean', '-xfd'], {
+                cwd: resolvedDir,
+                stdout: 'inherit'
+            });
+            process.stdout.write('done\n');
 
-        const zipFile = path.resolve(root(), `${entry.name}-${entry.version}.src.zip`);
+            const zipFile = path.resolve(root(), `${entry.name}-${entry.version}.src.zip`);
 
-        const archive = archiver('zip');
-        const output = fs.createWriteStream(zipFile, { flags: "w" });
-        archive.pipe(output);
-        await addExtensionToArchive(archive, path.resolve(rootDir, dir));
-        await archive.finalize();
+            const archive = archiver('zip');
+            const output = fs.createWriteStream(zipFile, { flags: "w" });
+            archive.pipe(output);
+            await addExtensionToArchive(archive, path.resolve(rootDir, dir.name));
+            await archive.finalize();
+        }
     }
 }
 
@@ -106,10 +115,12 @@ async function archiveBuiltins() {
     const output = fs.createWriteStream(zipFile, { flags: "w" });
     archive.pipe(output);
 
-    const dirs = await fs.promises.readdir(vscodeExtensions());
-    for (dir of dirs) {
-        if (!excludedDirs.includes(dir)) {
-            await addExtensionToArchive(archive, path.resolve(vscodeExtensions(), dir));
+    const dirs = await fs.promises.readdir(vscodeExtensions(), { withFileTypes: true });
+    for (const dir of dirs) {
+        if (dir.isDirectory()) {
+            if (!excludedDirs.includes(dir.name)) {
+                await addExtensionToArchive(archive, path.resolve(vscodeExtensions(), dir.name));
+            }
         }
     }
 

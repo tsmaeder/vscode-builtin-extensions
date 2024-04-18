@@ -4,3 +4,5 @@ lib
 dist
 external-builtins/
 dash-licenses.jar
+*.zip
+summary.txt

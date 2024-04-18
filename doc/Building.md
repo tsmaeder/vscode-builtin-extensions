@@ -10,7 +10,11 @@
 4. Check out the version of VS code you want to use
     cd vscode
     git checkout <git tag or branch>
-
+5. Install project dependencies
+    yarn
+    
 ## Building
+
+> build without mangling
 
 ## Packaging
