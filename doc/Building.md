@@ -14,7 +14,20 @@
     yarn
     
 ## Building
+Building the exensions from VS Code is done simply with 
 
-> build without mangling
+    yarn build:extensions
+
+This will compile a production ("minified") version of the built-in extensions into the `vscode/.build` folder. In order to produce unminified versions for debugging,
+you will need to edit the build script at `vscode/build/lib/extensions.js`. Find the line that creates the webpack config. It should look like this:
+```
+const webpackConfig = {
+   ...config,
+   ...{ mode: 'production' }
+};
+```
+Remove part saying `mode: production` and redo the build
 
 ## Packaging
+
+=> add a section about how typescript-langauge-features is patched in vscode-bundle.js and why
