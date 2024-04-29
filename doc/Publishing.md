@@ -30,7 +30,7 @@ This will `git clean` all extension directories and generate a zip file named li
 
 Open an issue that looks like this: https://gitlab.eclipse.org/eclipsefdn/emo-team/iplab/-/issues/11676. Use the template "vet third party" on the new issue and fill in the templata liek in the example issue. Attach the source file generated in step one as "source". Since there is no real "clearlydefined id" for the built-ins, we set the title of the issue to "project/ecd.theia/-/vscode-builtin-extensions/<VS Code version>"
 
-## IP checks for VS Code built-ins
+## IP checks for external VS Code built-ins
 We now have to perform the IP checks for the "external builtins". These are extensions which are not develped as part of the VS code repository, but which are still included as part of the
 VS Code product. They are described in the `product.json` file which lives at the root of the VS Code repository. There is a package script which will clone the relevant repos and check out
 the correct tag into a folder named `external-builtins`.
@@ -50,3 +50,7 @@ If the IP-check bot cannot figure out the source (it will ask for source in a co
 You can then drag the relevant zip into the gitlab issue.
 
 ## Produce the VS Code built-ins
+
+Building and packaging the built-ins is described in [Building.md](./Building.md). 
+
+
