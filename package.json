@@ -11,7 +11,7 @@
         "create-extension-pack:latest": "node src/create-extension-pack.js --tag latest",
         "create-extension-pack:next": "node src/create-extension-pack.js --tag next",
         "checkout-latest-vscode-release": "node src/checkout-latest-vscode.js",
-        "get-external-builtin": "node src/get-external-builtins.js",
+        "get-external-builtins": "node src/get-external-builtins.js",
         "clean": "git clean -ffdx; cd vscode && git clean -ffdx",
         "download:dash-licenses": "node ./src/download.js --url=\"https://repo.eclipse.org/service/local/artifact/maven/redirect?r=dash-licenses&g=org.eclipse.dash&a=org.eclipse.dash.licenses&v=LATEST\" --out=dash-licenses.jar",
         "ip-check:builtin": "node ./src/check-dependencies.js --dir vscode/extensions",

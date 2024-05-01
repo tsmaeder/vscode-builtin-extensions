@@ -30,7 +30,7 @@ Remove part saying `mode: production` and redo the build
 
 ## Packaging
 
-## Packaging the built-in vscode extensions
+### Packaging the built-in vscode extensions
 
 Once we have built our extensions, we can packge them into `*.vsix`-files using this package script:
 
@@ -49,7 +49,7 @@ This will generate `*.vsix` files of the form `<name>-<vscode-version>-next.<com
 produce self-contained extensions, we need to include those modules (at the time, it's the typescript language server) into the packaged extensions (currently for `typescript-language-features` and `html-language-features`). The code doing this is located in `src/package-vsix.js`. We also need to patch the `typescript-language-features`
 extension because it contains a hard-code reference to `../node_modules`.
 
-## Creating the built-ins extension-pack.
+### Creating the built-ins extension-pack
 
 We also create an extension pack from the internal and external built-ins into the `dist` folder with a package script. The file name will be of the form:
 builtin-extension-pack-<vscode version>.vsix.

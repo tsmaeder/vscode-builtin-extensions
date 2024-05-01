@@ -27,12 +27,9 @@ const { url, out } = yargs.option('url', {
     demandOption: true
 }).argv;
 
-
 download();
 
 async function download() {
-    
-
     const response= await fetch(url);
-    fs.writeFile(path.resolve(out), await response.buffer());
+    await fs.writeFile(path.resolve(out), await response.buffer());
 };
